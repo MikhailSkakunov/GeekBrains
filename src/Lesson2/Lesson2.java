@@ -1,5 +1,7 @@
 package Lesson2;
 
+import java.util.Arrays;
+
 public class Lesson2 {
 
     public static void main(String[] args) {
@@ -10,30 +12,28 @@ public class Lesson2 {
             System.out.println();
             }
             catch (MyArrayDataException e) {
-            System.out.println();
+            System.out.println(e.getMessage());
         }
-
     }
 
     private static void workingArray(String[][] array) throws MyArraySizeException, MyArrayDataException {
-
         if (array.length != 4 || array[0].length != 4) {
             throw new MyArraySizeException();
         }
-
             int sum = 0;
             for (int i = 0; i < array.length; i++) {
                 for (int j = 0; j < array[0].length; j++) {
                 try {
                     sum += Integer.parseInt(String.valueOf(array[i][j]));
+                    System.out.print(sum + " ");
+
                 }
                 catch (NumberFormatException e) {
-                    System.out.println("Не преобразовать к типу int! Проверьте данные!");
+
                     throw new MyArrayDataException();
                 }
-                    System.out.print(sum + " ");
+                    System.out.println();
                 }
             }
-        System.out.println();
     }
 }
