@@ -6,13 +6,20 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class Main extends Application {
+    public static final List<String> USERS = List.of("Milana", "Helen", "Anastaisha");
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("sample.fxml"));
+
+        Parent root = fxmlLoader.load();
+
+        primaryStage.setScene(new Scene(root));
+
         primaryStage.show();
     }
 
