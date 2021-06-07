@@ -1,6 +1,6 @@
 package Lesson4;
 
-import com.sun.javafx.charts.Legend;
+//import com.sun.javafx.charts.Legend;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -8,7 +8,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 
-import java.awt.event.KeyEvent;
+import javafx.scene.input.KeyEvent;
 
 public class Controller {
 
@@ -27,7 +27,7 @@ public class Controller {
     }
 
     @FXML
-    public void initialize(Legend usersList) {
+    public void initialize() {
         usersList.setItems(FXCollections.observableArrayList(Main.USERS));
     }
 

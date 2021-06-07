@@ -16,7 +16,7 @@
    <bottom>
       <HBox fillHeight="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="46.0" prefWidth="619.0" BorderPane.alignment="CENTER">
          <children>
-            <TextArea fx:id="textMessageArea" onKeyPressed="#sendTextAreaMessage" HBox.hgrow="ALWAYS" />
+            <TextArea fx:id="textMessageArea"  HBox.hgrow="ALWAYS" />
             <Button fx:id="sendMessageButton" mnemonicParsing="false" onAction="#sendMessage" prefHeight="46.0" prefWidth="114.0" text="Отправить">
                <font>
                   <Font name="Calibri Italic" size="13.0" />
