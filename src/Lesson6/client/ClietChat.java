@@ -17,8 +17,6 @@ import java.util.List;
 
 public class ClietChat extends Application {
     public static final List<String> USERS = List.of("Milana", "Helen", "Anastaisha");
-    public static final String SERVER_HOST = "localhost";
-    public static final int SERVER_PORT = 8189;
     public static final String NETWORK_ERROR_TITLE = "Сетевая ошибка";
     public static final String NETWORK_ERROR_CONNECTION_TYPE = "Невозможно установить сетевое соединение.";
 
@@ -39,6 +37,13 @@ public class ClietChat extends Application {
 
     private void connectToServer() {
         try {
+            Network network = new Network();
+            boolean result = network.connect();
+            if (!result) {
+                String errMsg = "Не удалось установить соединение с сервером!";
+                showNetworkErrorDialog(NETWORK_ERROR_CONNECTION_TYPE, errMsg);
+                return;
+            }
             Socket socket = new Socket(SERVER_HOST, SERVER_PORT);
             DataInputStream input = new DataInputStream(socket.getInputStream());
             DataOutputStream output = new DataOutputStream(socket.getOutputStream());
