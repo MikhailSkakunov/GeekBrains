@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.function.Consumer;
 
 public class Network {
     public static final String SERVER_HOST = "localhost";
@@ -34,8 +35,39 @@ public class Network {
             System.err.println("Failed to establish connection");
             return false;
         }
-        public void sendMessage(){
 
+        }
+    public void sendMessage(String message) throws IOException {
+
+        try {
+            socketOutput.writeUTF(message);
+        } catch (IOException e) {
+            System.err.println("Filed to send message to server");
+            e.printStackTrace();
+            throw e;
+        }
+    }
+    public void waitMessages(Consumer<String> messageHandler) {
+        Thread thread = new Thread(() -> {
+        while (true) {
+            try {
+                String message = socketInput.readUTF();
+                messageHandler.accept(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Filed to read message from server");
+                break;
+            }
+        }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+    public void close() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
