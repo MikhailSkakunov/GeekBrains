@@ -8,7 +8,6 @@ public class Rate extends Thread {
         this.arr = arr;
         this.index = index;
     }
-
     @Override
             public void run() {
         for (int i = 0; i < arr.length; i++) {
@@ -16,7 +15,6 @@ public class Rate extends Thread {
             arr[i] = arrayComputation(value,i + index);
         }
     }
-
     private float arrayComputation(float value, int id) {
        return  (float)(value * Math.sin(0.2f + id / 5) * Math.cos(0.2f + id / 5) * Math.cos(0.4f + id / 2));
     }
