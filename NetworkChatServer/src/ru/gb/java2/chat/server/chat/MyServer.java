@@ -42,16 +42,19 @@ public class MyServer {
 
     public synchronized void broadcastMessage(String message, ClientHandler sender) throws IOException {
         for (ClientHandler client : clients) {
-            if (client != sender)
-            client.sendMessage(message);
+            if (client != sender) {
+                client.sendCommand(Command.clientMessageCommand(sender.getUsername(), message));
+            }
         }
     }
 
-    public synchronized void subscribe(ClientHandler clientHandler) {
+    public synchronized void subscribe(ClientHandler clientHandler) throws IOException {
         clients.add(clientHandler);
+        notifyClientsUsersListUpdated();
     }
-    public synchronized void unsubscribe(ClientHandler clientHandler) {
+    public synchronized void unsubscribe(ClientHandler clientHandler) throws IOException {
         clients.remove(clientHandler);
+        notifyClientsUsersListUpdated();
     }
 
     public AuthService getAuthService() {

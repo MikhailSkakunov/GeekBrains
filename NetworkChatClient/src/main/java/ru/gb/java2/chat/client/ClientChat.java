@@ -51,7 +51,7 @@ public class ClientChat extends Application {
         return authLoader.getController();
     }
 
-    private ChatController getChatController() {
+    public ChatController getChatController() {
         return chatWindowLoader.getController();
     }
 

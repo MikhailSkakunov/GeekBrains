@@ -7,14 +7,14 @@ import java.net.Socket;
 import java.util.function.Consumer;
 
 public class Network {
-    public static final String SERVER_HOST = "localhost";
-    public static final int SERVER_PORT = 8189;
-    private Socket socket;
-    private DataInputStream socketInput;
-    private DataOutputStream socketOutput;
+    private static final int SERVER_PORT = 8189;
+    private static final String SERVER_HOST = "localhost";
 
     private final String host;
     private final int port;
+    private Socket socket;
+    private DataInputStream socketInput;
+    private DataOutputStream socketOutput;
 
     public Network(String host, int port) {
         this.host = host;
@@ -24,6 +24,7 @@ public class Network {
     public Network() {
         this(SERVER_HOST, SERVER_PORT);
     }
+
     public boolean connect() {
         try {
             socket = new Socket(host, port);
@@ -35,34 +36,33 @@ public class Network {
             System.err.println("Failed to establish connection");
             return false;
         }
+    }
 
-        }
     public void sendMessage(String message) throws IOException {
-
         try {
             socketOutput.writeUTF(message);
         } catch (IOException e) {
-            System.err.println("Filed to send message to server");
-            e.printStackTrace();
+            System.err.println("Failed to send message to server");
             throw e;
         }
     }
+
     public void waitMessages(Consumer<String> messageHandler) {
         Thread thread = new Thread(() -> {
-        while (true) {
-            try {
-                String message = socketInput.readUTF();
-                messageHandler.accept(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.err.println("Filed to read message from server");
-                break;
+            while (true) {
+                try {
+                    String message = socketInput.readUTF();
+                    messageHandler.accept(message);
+                } catch (IOException e) {
+                    System.err.println("Failed to read message from server");
+                    break;
+                }
             }
-        }
         });
         thread.setDaemon(true);
         thread.start();
     }
+
     public void close() {
         try {
             socket.close();

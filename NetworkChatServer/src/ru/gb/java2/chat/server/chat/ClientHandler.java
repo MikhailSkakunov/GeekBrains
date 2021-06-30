@@ -1,18 +1,26 @@
 package ru.gb.java2.chat.server.chat;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import ru.gb.java2.chat.clientserver.Command;
+import ru.gb.java2.chat.clientserver.CommandType;
+import ru.gb.java2.chat.clientserver.commands.AuthCommandData;
+import ru.gb.java2.chat.clientserver.commands.PrivateMessageCommandData;
+import ru.gb.java2.chat.clientserver.commands.PublicMessageCommandData;
+
+import java.io.*;
+
+import java.io.*;
 import java.net.Socket;
+import java.util.Timer;
+
+
 
 public class ClientHandler {
 
-    private static final String AUTH_OK_COMMAND = "/authOk";
-    private static final String AUTH_COMMAND = "auth";
-    private MyServer server;
+    private final MyServer server;
     private final Socket clientSocket;
-    private DataInputStream inputStream;
-    private DataOutputStream outputStream;
+    private ObjectInputStream inputStream;
+    private ObjectOutputStream outputStream;
+    private String username;
 
     public ClientHandler(MyServer server, Socket clientSocket) {
         this.server = server;
@@ -20,16 +28,15 @@ public class ClientHandler {
     }
 
     public void handle() throws IOException {
-        inputStream = new DataInputStream(clientSocket.getInputStream());
-        outputStream = new DataOutputStream(clientSocket.getOutputStream());
+        inputStream = new ObjectInputStream(clientSocket.getInputStream());
+        outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
         new Thread(() -> {
             try {
                 authentication();
                 readMessages();
             } catch (IOException e) {
                 System.err.println("Failed to process message from client");
-            }
-            finally {
+            } finally {
                 try {
                     closeConnection();
                 } catch (IOException e) {
@@ -41,22 +48,38 @@ public class ClientHandler {
 
     private void authentication() throws IOException {
         while (true) {
-            String message = inputStream.readUTF();
-            if (message.startsWith(AUTH_COMMAND)) {
-                String[] parts = message.split(" ");
-                String login = parts[1];
-                String password = parts[2];
-
+            Command command = readCommand();
+            if (command == null) {
+                continue;
+            }
+            if (command.getType() == CommandType.AUTH) {
+                AuthCommandData data = (AuthCommandData) command.getData();
+                String login = data.getLogin();
+                String password = data.getPassword();
                 String username = server.getAuthService().getUsernameByLoginAndPassword(login, password);
                 if (username == null) {
-                    sendMessage("Некорректные логин и пароль!");
+                    sendCommand(Command.errorCommand("Некорректные логин и пароль!"));
+                } else if (server.isUsernameBusy(username)) {
+                    sendCommand(Command.errorCommand("Такой юзер уже существует!"));
                 } else {
-                    sendMessage(String.format("%s %s",AUTH_OK_COMMAND, username));
+                    this.username = username;
+                    sendCommand(Command.authOkCommand(username));
                     server.subscribe(this);
                     return;
                 }
             }
         }
+    }
+
+    private Command readCommand() throws IOException {
+        Command command = null;
+        try {
+            command = (Command) inputStream.readObject();
+        } catch (ClassNotFoundException e) {
+            System.err.println("Failed to read Command class");
+            e.printStackTrace();
+        }
+        return command;
     }
 
     private void closeConnection() throws IOException {
@@ -66,21 +89,38 @@ public class ClientHandler {
 
     private void readMessages() throws IOException {
         while (true) {
-            String message = inputStream.readUTF().trim();
-            System.out.println("message " + message);
-            if (message.startsWith("/end")) {
-                return;
+            Command command = readCommand();
+            if (command == null) {
+                continue;
             }
-            else processMessage(message);
+            switch (command.getType()) {
+                case END:
+                    return null;
+                case PRIVATE_MESSAGE: {
+                    PrivateMessageCommandData data = (PrivateMessageCommandData) command.getData();
+                    String recipient = data.getReceiver();
+                    String privateMessage = data.getMessage();
+                    server.sendPrivateMessage(this, recipient, privateMessage);
+                    break;
+                }
+                case PUBLIC_MESSAGE: {
+                    PublicMessageCommandData data = (PublicMessageCommandData) command.getData();
+                    processMessage(data.getMessage());
+                }
+            }
         }
     }
 
-    private void processMessage(String message) throws IOException {
+    private void processMessage (String message) throws IOException {
 
         server.broadcastMessage(message, this);
     }
 
-    public void sendMessage(String message) throws IOException {
-        outputStream.writeUTF(message);
+    public void sendCommand(Command command) throws IOException {
+        outputStream.writeObject(command);
+    }
+
+    public String getUsername() {
+        return username;
     }
 }
