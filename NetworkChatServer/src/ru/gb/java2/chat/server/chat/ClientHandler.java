@@ -10,7 +10,7 @@ import java.io.*;
 
 import java.net.Socket;
 import java.util.Timer;
-
+import java.util.TimerTask;
 
 
 public class ClientHandler {
@@ -47,9 +47,18 @@ public class ClientHandler {
 
     private void authentication() throws IOException {
         while (true) {
-
-
-
+            TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        closeConnection();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            Timer timer = new Timer(true);
+            timer.schedule(timerTask, 120_000);
 
             Command command = readCommand();
             if (command == null) {
@@ -68,6 +77,7 @@ public class ClientHandler {
                     this.username = username;
                     sendCommand(Command.authOkCommand(username));
                     server.subscribe(this);
+                    timer.cancel();
                     return;
                 }
             }
