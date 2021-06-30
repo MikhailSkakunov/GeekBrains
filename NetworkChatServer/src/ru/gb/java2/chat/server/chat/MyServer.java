@@ -1,10 +1,8 @@
 package ru.gb.java2.chat.server.chat;
 
+import ru.gb.java2.chat.clientserver.Command;
 import ru.gb.java2.chat.server.chat.auth.AuthService;
 
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -52,6 +50,17 @@ public class MyServer {
         clients.add(clientHandler);
         notifyClientsUsersListUpdated();
     }
+
+    private void notifyClientsUsersListUpdated() throws IOException {
+        List<String> users = new ArrayList<>();
+        for (ClientHandler client : clients) {
+            users.add(client.getUsername());
+        }
+        for (ClientHandler client : clients) {
+            client.sendCommand(Command.updateUsersListCommand(users));
+        }
+    }
+
     public synchronized void unsubscribe(ClientHandler clientHandler) throws IOException {
         clients.remove(clientHandler);
         notifyClientsUsersListUpdated();
@@ -59,5 +68,22 @@ public class MyServer {
 
     public AuthService getAuthService() {
         return authService;
+    }
+
+    public synchronized boolean isUsernameBusy(String username) {
+        for (ClientHandler client : clients) {
+            if (client.getUsername().equals(username))
+                return true;
+        }
+    return false;
+    }
+
+    public synchronized void sendPrivateMessage(ClientHandler sender, String recipient, String privateMessage) throws IOException {
+        for (ClientHandler client : clients) {
+            if (client != sender && client.getUsername().equals(recipient)) {
+                client.sendCommand(Command.clientMessageCommand(sender.getUsername(), privateMessage));
+                break;
+            }
+        }
     }
 }

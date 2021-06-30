@@ -8,7 +8,6 @@ import ru.gb.java2.chat.clientserver.commands.PublicMessageCommandData;
 
 import java.io.*;
 
-import java.io.*;
 import java.net.Socket;
 import java.util.Timer;
 
@@ -48,6 +47,10 @@ public class ClientHandler {
 
     private void authentication() throws IOException {
         while (true) {
+
+
+
+
             Command command = readCommand();
             if (command == null) {
                 continue;
@@ -95,7 +98,7 @@ public class ClientHandler {
             }
             switch (command.getType()) {
                 case END:
-                    return null;
+                    return;
                 case PRIVATE_MESSAGE: {
                     PrivateMessageCommandData data = (PrivateMessageCommandData) command.getData();
                     String recipient = data.getReceiver();

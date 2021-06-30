@@ -1,7 +1,7 @@
 package ru.gb.java2.chat.client.controllers;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -14,7 +14,7 @@ import ru.gb.java2.chat.client.model.ReadCommandListener;
 import ru.gb.java2.chat.clientserver.Command;
 import ru.gb.java2.chat.clientserver.CommandType;
 import ru.gb.java2.chat.clientserver.commands.AuthOkCommandData;
-import ru.gb.java2.chat.clientserver.commands.UpdateUsersListCommandData;
+
 
 import java.io.IOException;
 

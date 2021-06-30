@@ -25,10 +25,6 @@ import java.util.Date;
 import java.util.List;
 
 public class ChatController {
-    private static final List<String> USERS_TEST_DATA = List.of(
-            "username1",
-            "username2",
-            "username3");
 
     @FXML
     private ListView<String> usersList;
