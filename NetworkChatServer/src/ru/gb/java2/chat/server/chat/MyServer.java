@@ -1,7 +1,8 @@
 package ru.gb.java2.chat.server.chat;
 
 import ru.gb.java2.chat.clientserver.Command;
-import ru.gb.java2.chat.server.chat.auth.AuthService;
+import ru.gb.java2.chat.server.chat.auth.IAuthService;
+import ru.gb.java2.chat.server.chat.auth.PersistentDbAuthService;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -12,13 +13,14 @@ import java.util.List;
 public class MyServer {
 
     private final List<ClientHandler> clients = new ArrayList<>();
-    private AuthService authService;
+    private IAuthService authService;
 
     public void start(int port) {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Server has been started");
-            authService = new AuthService();
+            authService = createAuthService();
+            authService.start();
 
             while (true) {
             waitAndProcessNewClientConnection(serverSocket);
@@ -27,7 +29,17 @@ public class MyServer {
             System.err.println("Failed to bind port " + port);
             e.printStackTrace();
         }
+        finally {
+            if (authService != null) {
+                authService.stop();
+            }
+        }
     }
+
+    private IAuthService createAuthService() {
+        return new PersistentDbAuthService();
+    }
+
 
     private void waitAndProcessNewClientConnection(ServerSocket serverSocket) throws IOException {
         System.out.println("Waiting for new client connection...");
@@ -66,7 +78,7 @@ public class MyServer {
         notifyClientsUsersListUpdated();
     }
 
-    public AuthService getAuthService() {
+    public IAuthService getAuthService() {
         return authService;
     }
 
