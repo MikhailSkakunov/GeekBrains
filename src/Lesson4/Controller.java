@@ -14,7 +14,7 @@ public class Controller {
 
 
 
-    @FXML public ListView<String> usersList;
+    @FXML public ListView<String> userList;
     @FXML private TextArea chatTextArea;
     @FXML private TextArea textMessageArea;
     @FXML private Button sendMessageButton;
@@ -28,7 +28,7 @@ public class Controller {
 
     @FXML
     public void initialize() {
-        usersList.setItems(FXCollections.observableArrayList(Main.USERS));
+        userList.setItems(FXCollections.observableArrayList(Main.USERS));
     }
 
     @FXML
