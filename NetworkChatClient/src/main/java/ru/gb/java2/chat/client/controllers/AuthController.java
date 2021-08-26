@@ -44,6 +44,9 @@ public class AuthController {
         }
 
         try {
+            Network network = Network.getInstance();
+            network.setLastLogin(login);
+            network.setLastPassword(password);
             Network.getInstance().sendAuthMessage(login, password);
         } catch (IOException e) {
             Dialogs.NetworkError.SEND_MESSAGE.show();

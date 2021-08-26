@@ -21,9 +21,12 @@ public class Network {
     private ObjectInputStream socketInput;
     private ObjectOutputStream socketOutput;
 
-    private List<ReadCommandListener> listeners = new CopyOnWriteArrayList<>();
+    private final List<ReadCommandListener> listeners = new CopyOnWriteArrayList<>();
     private Thread readMessageProcess;
     private boolean connected;
+    private String lastLogin;
+    public String currentUsername;
+    private String lastPassword;
 
 
     public static Network getInstance() {
@@ -138,5 +141,29 @@ public class Network {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(String lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
+    public String getCurrentUsername() {
+        return currentUsername;
+    }
+
+    public void setCurrentUsername(String currentUsername) {
+        this.currentUsername = currentUsername;
+    }
+
+    public String getLastPassword() {
+        return lastPassword;
+    }
+
+    public void setLastPassword(String lastPassword) {
+        this.lastPassword = lastPassword;
     }
 }
