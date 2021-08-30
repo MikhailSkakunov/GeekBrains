@@ -29,7 +29,7 @@ public class ClientHandler {
     public void handle() throws IOException {
         inputStream = new ObjectInputStream(clientSocket.getInputStream());
         outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-        new Thread(() -> {
+        server.getExecutorService().execute(() -> {
             try {
                 authentication();
                 readMessages();
@@ -42,8 +42,9 @@ public class ClientHandler {
                     System.err.println("Filed to close connection");
                 }
             }
-        }).start();
+        });
     }
+
 
     private void authentication() throws IOException {
         while (true) {
